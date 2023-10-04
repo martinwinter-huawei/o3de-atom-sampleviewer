@@ -61,8 +61,6 @@ namespace AtomSampleViewer
     {
         using namespace AZ;
 
-        RHI::Ptr<RHI::Device> device = Utils::GetRHIDevice();
-
         AZ::RHI::PipelineStateDescriptorForDraw pipelineStateDescriptor;
 
         {

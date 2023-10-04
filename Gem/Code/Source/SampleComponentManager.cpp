@@ -52,6 +52,7 @@
 #include <RHI/MRTExampleComponent.h>
 #include <RHI/MSAAExampleComponent.h>
 #include <RHI/MultiThreadComponent.h>
+#include <RHI/MultiGPUExampleComponent.h>
 #include <RHI/MultiViewportSwapchainComponent.h>
 #include <RHI/MultipleViewsComponent.h>
 #include <RHI/QueryExampleComponent.h>
@@ -279,6 +280,7 @@ namespace AtomSampleViewer
             NewRHISample<MultipleViewsComponent>("MultipleViews"),
             NewRHISample<MRTExampleComponent>("MultiRenderTarget"),
             NewRHISample<MultiThreadComponent>("MultiThread"),
+            NewRHISample<MultiGPUExampleComponent>("MultiGPU"),
             NewRHISample<MultiViewportSwapchainComponent>("MultiViewportSwapchainComponent", [] { return IsMultiViewportSwapchainSampleSupported(); }),
             NewRHISample<QueryExampleComponent>("Queries"),
             NewRHISample<RayTracingExampleComponent>("RayTracing", []() {return Utils::GetRHIDevice()->GetFeatures().m_rayTracing; }),
