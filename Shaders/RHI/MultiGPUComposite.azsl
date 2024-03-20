@@ -10,58 +10,55 @@
 
 ShaderResourceGroup CompositeSrg : SRG_PerObject
 {
-	Texture2D m_inputTextureLeft;
-	Texture2D m_inputTextureRight;
-    uint32_t m_outputWidth;
+    Texture2D m_inputTextureLeft;
+    Texture2D m_inputTextureRight;
 
-	Sampler m_sampler
+    Sampler m_sampler
     {
-        MaxAnisotropy = 16;
-        AddressU = Wrap;
-        AddressV = Wrap;
-        AddressW = Wrap;
+        MinFilter = Linear;
+        MagFilter = Linear;
+        MipFilter = Linear;
+        AddressU = Clamp;
+        AddressV = Clamp;
+        AddressW = Clamp;
     };
-    // TODO: Does this need padding?
 }
 
 struct VSInput 
 {
-	float3 m_position : POSITION;
-	float2 m_uv : UV0;
+    float3 m_position : POSITION;
+    float2 m_uv : UV0;
 };
 
 struct VSOutput
 {
-	float4 m_position : SV_Position;
-	float2 m_uv : UV0;
+    float4 m_position : SV_Position;
+    float2 m_uv : UV0;
 };
 
 VSOutput MainVS(VSInput vsInput)
 {
-	VSOutput OUT;
+    VSOutput OUT;
     OUT.m_position = float4(vsInput.m_position, 1.0);
-	OUT.m_uv = vsInput.m_uv;
-	return OUT;
+    OUT.m_uv = vsInput.m_uv;
+    return OUT;
 }
 
 struct PSOutput
 {
-	float4 m_color : SV_Target0;
+    float4 m_color : SV_Target0;
 };
 
 PSOutput MainPS(VSOutput psInput)
 {
-	PSOutput OUT;
-    // TODO: Need proper size here
-    if(psInput.m_position.x < CompositeSrg::m_outputWidth)
+    PSOutput OUT;
+    if(psInput.m_uv.x <= 0.5)
     {
-        // OUT.m_color = float4(CompositeSrg::m_inputTextureLeft.Sample(CompositeSrg::m_sampler, psInput.m_uv).rgb, 1.0);
-        OUT.m_color = float4(0.0, 1.0, 0.0, 1.0);
+        OUT.m_color = CompositeSrg::m_inputTextureLeft.Sample(CompositeSrg::m_sampler, psInput.m_uv);
     }
     else
     {
-        // OUT.m_color = float4(CompositeSrg::m_inputTextureRight.Sample(CompositeSrg::m_sampler, psInput.m_uv).rgb, 1.0);
-        OUT.m_color = float4(1.0, 0.0, 0.0, 1.0);
+        OUT.m_color = CompositeSrg::m_inputTextureRight.Sample(CompositeSrg::m_sampler, psInput.m_uv);
     }
 	return OUT;
 }

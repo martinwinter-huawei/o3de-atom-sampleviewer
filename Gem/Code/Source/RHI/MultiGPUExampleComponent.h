@@ -20,6 +20,8 @@
 #include <Atom/RHI/MultiDeviceBufferPool.h>
 #include <Atom/RHI/MultiDeviceImagePool.h>
 #include <Atom/RHI/MultiDeviceImage.h>
+#include <Atom/RHI/MultiDeviceShaderResourceGroupPool.h>
+#include <Atom/RHI/MultiDeviceCopyItem.h>
 
 #include <AzCore/Math/Matrix4x4.h>
 
@@ -76,14 +78,16 @@ namespace AtomSampleViewer
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceImage> m_image{};
         AZStd::array<AZ::RHI::AttachmentId, 2> m_imageAttachmentIds = { { AZ::RHI::AttachmentId("MultiGPURenderTexture1"),
                                                                           AZ::RHI::AttachmentId("MultiGPURenderTexture2") } };
-        uint32_t m_imageWidth;
-        uint32_t m_imageHeight;
+        AZStd::array<AZ::RHI::AttachmentId, 2> m_bufferAttachmentIds = { { AZ::RHI::AttachmentId("MultiGPUBufferToGPU"),
+                                                                          AZ::RHI::AttachmentId("MultiGPUBufferToCPU") } };
+        uint32_t m_imageWidth{0};
+        uint32_t m_imageHeight{0};
 
         /////////////////////////////////////////////////////////////////////////
         //! First device methods and members
 
-        void SetupPipelineMain();
-        void CreateCopyScopeProducer();
+        void CreateCopyToGPUScopeProducer();
+        void CreateCopyToCPUScopeProducer();
         void CreateCompositeScopeProducer();
 
         struct BufferDataCompositePass
@@ -94,25 +98,24 @@ namespace AtomSampleViewer
         };
 
         AZStd::array<AZ::RHI::ShaderInputImageIndex, 2> m_textureInputIndices;
-        AZ::RHI::ShaderInputConstantIndex m_outputWidthInputIndex;
 
         AZ::RHI::Ptr<AZ::RHI::Device> m_device_1{};
         AZ::RHI::MultiDevice::DeviceMask m_deviceMask_1{};
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceBufferPool> m_stagingBufferPoolToGPU{};
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceBuffer> m_stagingBufferToGPU{};
-        AZ::RHI::MultiDeviceCopyBufferToImageDescriptor m_copyDescriptor;
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceImagePool> m_transferImagePool{};
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceImage> m_transferImage{};
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceBufferPool> m_inputAssemblyBufferPoolComposite{};
         AZ::RHI::Ptr<AZ::RHI::MultiDeviceBuffer> m_inputAssemblyBufferComposite{};
         AZStd::array<AZ::RHI::MultiDeviceStreamBufferView, 2> m_streamBufferViewsComposite;
         AZ::RHI::ConstPtr<AZ::RHI::MultiDevicePipelineState> m_pipelineStateComposite;
-        AZ::Data::Instance<AZ::RPI::ShaderResourceGroup> m_shaderResourceGroupComposite;
+        AZ::RHI::Ptr<AZ::RHI::MultiDeviceShaderResourceGroupPool> m_shaderResourceGroupPoolComposite;
+        AZ::RHI::Ptr<AZ::RHI::MultiDeviceShaderResourceGroup> m_shaderResourceGroupComposite;
+        AZ::RHI::MultiDeviceShaderResourceGroupData m_shaderResourceGroupDataComposite;
+        AZStd::array<AZ::RHI::Scissor, 2> m_scissors{};
 
         /////////////////////////////////////////////////////////////////////////
         //! Second device methods and members
-
-        void SetupPipelineSecondary();
 
         AZ::RHI::Ptr<AZ::RHI::Device> m_device_2{};
         AZ::RHI::MultiDevice::DeviceMask m_deviceMask_2{};
